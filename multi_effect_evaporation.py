@@ -10,7 +10,7 @@ C_f     = 5     #wt%
 T_f     = 25    #deg C
 
 W_s_ini = 6.25  #kg/hr
-T_s     = 200   #deg C
+T_s     = 250   #deg C
 P_s     = 2.5   #bara
 
 #Define the pressure of each evaporator, this at the same time defines the number of evaporators
@@ -29,21 +29,21 @@ W_salt  = W_f * (C_f / 100)  #kg/hr
 for P in P_all:
 
     #Solve the input stream 
-    W_f_water = W_f - W_salt                                                                      #kg/hr
+    W_f_water = W_f - W_salt                                                                               #kg/hr
 
     #Evaporator side
-    T               = water_boiltemp(P)                                                           #K
-    latent_Q        = water_vapheat(T - 273.15)                                                   #kJ/kg
+    T               = water_boiltemp(P)                                                                    #K
+    latent_Q        = water_vapheat(T - 273.15)                                                            #kJ/kg
 
     #Steam side
-    T_cond          = water_boiltemp(P_s)                                                         #K
-    latent_Q_steam  = water_vapheat(T_cond - 273.15)                                              #kJ/kg
+    T_cond          = water_boiltemp(P_s)                                                                  #K
+    latent_Q_steam  = water_vapheat(T_cond - 273.15)                                                       #kJ/kg
 
     #Energy and material balance
-    Q_released      = abs((gas_sensheat('H20', T_s, T_cond) / 18)) * W_s + W_s * latent_Q_steam   #kJ/hr
-    Q_feed_absorbed = W_f * Water.c_v * (T - T_f)                                                 #kJ/hr
-    W_v             = (Q_released - Q_feed_absorbed) / latent_Q                                   #kg/hr
-    W_c_water       = W_f_water - W_v                                                             #kg/hr
+    Q_released      = -gas_sensheat('H20', T_s, (T_cond - 273.15)) / 18 * W_s + W_s * latent_Q_steam       #kJ/hr
+    Q_feed_absorbed = W_f * Water.c_v * (T - T_f)                                                          #kJ/hr
+    W_v             = (Q_released - Q_feed_absorbed) / latent_Q                                            #kg/hr
+    W_c_water       = W_f_water - W_v                                                                      #kg/hr
 
     #Sanity Check
     if W_v <= 0:
